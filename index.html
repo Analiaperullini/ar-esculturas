@@ -187,7 +187,8 @@
               (e.poster ? ' poster="' + esc(e.poster) + '"' : '') +
               ' alt="Modelo 3D de ' + esc(e.nombre) + '"' +
               ' ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"' +
-              ' camera-controls auto-rotate shadow-intensity="1">' +
+              ' camera-controls auto-rotate shadow-intensity="1"' +
+              ' autoplay' + (e.animacion ? ' animation-name="' + esc(e.animacion) + '"' : '') + '>' +
               '<button slot="ar-button" class="boton-ar" id="botonAr" hidden>Verlo en tu espacio</button>' +
             '</model-viewer>' +
             '<div class="aviso-visor">El modelo 3D todavía no está disponible. Volvé a probar en un rato.</div>' +

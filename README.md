@@ -47,6 +47,7 @@ Para generar los carteles abrí `https://<tu-usuario>.github.io/<nombre-del-repo
     modelo: "modelos/condor.glb",
     poster: "",                         // opcional: imagen mientras carga
     sonido: "",                         // opcional: ruta a un .mp3
+    animacion: "",                      // opcional: nombre de la animación del .glb que arranca sola
     texto: [
       "Primer párrafo.",
       "Segundo párrafo."
