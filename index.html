@@ -79,6 +79,19 @@
     }
     .boton-ar:hover { background: var(--acento-oscuro); }
     .boton-ar:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
+    .animaciones {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+      margin: 14px 0 0;
+    }
+    .animaciones button {
+      padding: 10px 20px;
+      border: 2px solid var(--acento); border-radius: 999px;
+      background: transparent; color: var(--acento);
+      font: 600 .95rem "Inter", system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .animaciones button[aria-pressed="true"] { background: var(--acento); color: #fff; }
+    .animaciones button:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
     .sin-ar {
       margin: 16px 0 0; padding: 12px 16px;
       background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px;
@@ -193,6 +206,7 @@
             '</model-viewer>' +
             '<div class="aviso-visor">El modelo 3D todavía no está disponible. Volvé a probar en un rato.</div>' +
           '</div>' +
+          '<div class="animaciones" id="animaciones" role="group" aria-label="Animación" hidden></div>' +
           '<p class="sin-ar" id="sinAr" hidden>Tu celular no tiene realidad aumentada, pero podés girar y hacer zoom al modelo 3D.</p>' +
           '<ul class="datos">' +
             '<li><span class="etiqueta">Época</span><span class="valor">' + esc(e.epoca) + '</span></li>' +
@@ -229,9 +243,38 @@
           }
         }
 
+        // Si el modelo trae más de una animación, un botón por cada una.
+        function armarAnimaciones() {
+          var caja = document.getElementById("animaciones");
+          var nombres = mv.availableAnimations || [];
+          caja.innerHTML = "";
+          if (nombres.length < 2) { caja.hidden = true; return; }
+          nombres.forEach(function (nombre) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.textContent = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+            b.addEventListener("click", function () {
+              mv.animationName = nombre;
+              mv.play();
+              marcar();
+            });
+            b.dataset.animacion = nombre;
+            caja.appendChild(b);
+          });
+          function marcar() {
+            var actual = mv.animationName || nombres[0];
+            Array.prototype.forEach.call(caja.children, function (b) {
+              b.setAttribute("aria-pressed", String(b.dataset.animacion === actual));
+            });
+          }
+          marcar();
+          caja.hidden = false;
+        }
+
         mv.addEventListener("load", function () {
           modeloOk = true;
           revisarAR();
+          armarAnimaciones();
         });
 
         // Si el .glb no existe o no se puede leer, la página sigue funcionando.
