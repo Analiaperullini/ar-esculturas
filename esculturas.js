@@ -12,7 +12,7 @@ window.ESCULTURAS = [
     epoca: "Hace unos 6 millones de años",
     tamano: "Entre 100 y 300 kg",
     modelo: "modelos/gliptodonte.glb",
-    poster: "",
+    poster: "modelos/gliptodonte-poster.webp",
     sonido: "",
     texto: [
       "No era un dinosaurio: era un mamífero acorazado del grupo de los cingulados, parientes de las mulitas y los quirquinchos. Los gliptodontes vivieron en América del Sur desde hace unos 35 millones de años hasta hace menos de 10.000 años.",
