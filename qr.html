@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carteles QR · Esculturas que cobran vida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --fondo: #f6efe6;
+      --texto: #2b1d14;
+      --texto-suave: #6b5446;
+      --acento: #c4552d;
+      --borde: #e4d6c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--fondo); color: var(--texto);
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    .panel {
+      max-width: 680px; margin: 0 auto; padding: 24px 16px;
+    }
+    .panel h1 { font-family: "Fraunces", Georgia, serif; margin: 0 0 12px; }
+    .panel label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .panel input {
+      width: 100%; padding: 12px; font: inherit;
+      border: 1px solid var(--borde); border-radius: 10px; background: #fff;
+    }
+    .panel .ayuda { font-size: .9rem; color: var(--texto-suave); margin: 6px 0 16px; }
+    .panel .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+    .panel button {
+      padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+      font: 600 1rem "Inter", system-ui, sans-serif;
+      background: var(--acento); color: #fff;
+    }
+    .panel button.secundario { background: transparent; color: var(--acento); border: 2px solid var(--acento); }
+
+    .carteles { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 16px 16px 48px; }
+
+    /* Cartel A5: 148 × 210 mm */
+    .cartel {
+      width: 148mm; height: 210mm;
+      max-width: 100%;
+      background: var(--fondo);
+      box-shadow: 0 6px 24px rgba(43, 29, 20, .15);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 14mm 12mm;
+      border-top: 6mm solid var(--acento);
+      overflow: hidden;
+    }
+    .cartel .eyebrow {
+      font-size: 11pt; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--acento); margin: 0;
+    }
+    .cartel h2 {
+      font-family: "Fraunces", Georgia, serif; font-size: 34pt; line-height: 1.05;
+      margin: 4mm 0 8mm;
+    }
+    .cartel .qr {
+      width: 78mm; height: 78mm; padding: 4mm; background: #fff; border-radius: 3mm;
+      box-sizing: content-box;
+    }
+    .cartel .qr img, .cartel .qr canvas { width: 78mm !important; height: 78mm !important; display: block; }
+    .cartel .llamada { font-size: 15pt; font-weight: 600; margin: 8mm 0 1mm; }
+    .cartel .sub { font-size: 12pt; color: var(--texto-suave); margin: 0; }
+    .cartel .url { font-size: 7.5pt; color: var(--texto-suave); margin: 8mm 0 0; overflow-wrap: anywhere; }
+
+    @media print {
+      @page { size: A5; margin: 0; }
+      html, body { background: #fff; }
+      .panel { display: none; }
+      .carteles { display: block; padding: 0; }
+      .cartel {
+        box-shadow: none; max-width: none;
+        page-break-after: always; break-after: page;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .cartel:last-child { page-break-after: auto; break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+  <section class="panel">
+    <h1>Carteles QR</h1>
+    <label for="base">URL base del sitio</label>
+    <input id="base" type="url" inputmode="url" autocomplete="off">
+    <p class="ayuda">Cada QR apunta a <code>&lt;URL base&gt;?e=&lt;id&gt;</code>. Revisá que sea la dirección pública (la de GitHub Pages), no la de tu computadora.</p>
+    <div class="acciones">
+      <button id="imprimir">Imprimir</button>
+      <button id="regenerar" class="secundario">Actualizar QR</button>
+    </div>
+  </section>
+
+  <div class="carteles" id="carteles"></div>
+
+  <script src="esculturas.js"></script>
+  <script>
+    (function () {
+      var lista = Array.isArray(window.ESCULTURAS) ? window.ESCULTURAS : [];
+      var input = document.getElementById("base");
+      var contenedor = document.getElementById("carteles");
+
+      function esc(valor) {
+        return String(valor == null ? "" : valor)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // Dirección actual sin "qr.html" (ni query ni hash).
+      input.value = location.origin + location.pathname.replace(/qr\.html$/i, "");
+
+      function normalizarBase(base) {
+        base = base.trim().replace(/[?#].*$/, "").replace(/index\.html$/i, "");
+        if (base && !base.endsWith("/")) base += "/";
+        return base;
+      }
+
+      function generar() {
+        var base = normalizarBase(input.value);
+        // 78 mm a 96 dpi ≈ 295 px; lo generamos al triple para que imprima nítido.
+        var px = Math.round(78 / 25.4 * 96 * 3);
+
+        contenedor.innerHTML = lista.map(function (e, i) {
+          return '<article class="cartel">' +
+            '<p class="eyebrow">Realidad aumentada</p>' +
+            '<h2>' + esc(e.nombre) + '</h2>' +
+            '<div class="qr" id="qr-' + i + '"></div>' +
+            '<p class="llamada">Escaneá con la cámara del celular</p>' +
+            '<p class="sub">y mirá cómo era en tamaño real, a tu lado</p>' +
+            '<p class="url">' + esc(base + "?e=" + encodeURIComponent(e.id)) + '</p>' +
+            '</article>';
+        }).join("") || '<p>No hay esculturas en esculturas.js.</p>';
+
+        if (typeof QRCode === "undefined") {
+          contenedor.insertAdjacentHTML("afterbegin", '<p>No se pudo cargar la librería de QR. Revisá la conexión a internet.</p>');
+          return;
+        }
+
+        lista.forEach(function (e, i) {
+          new QRCode(document.getElementById("qr-" + i), {
+            text: base + "?e=" + encodeURIComponent(e.id),
+            width: px,
+            height: px,
+            colorDark: "#2b1d14",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        });
+      }
+
+      document.getElementById("regenerar").addEventListener("click", generar);
+      input.addEventListener("change", generar);
+      document.getElementById("imprimir").addEventListener("click", function () { window.print(); });
+
+      generar();
+    })();
+  </script>
+</body>
+</html>

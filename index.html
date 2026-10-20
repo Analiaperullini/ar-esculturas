@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Esculturas que cobran vida · Jujuy</title>
+  <meta name="description" content="Esculturas de Jujuy en realidad aumentada.">
+  <meta name="theme-color" content="#f6efe6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --fondo: #f6efe6;
+      --texto: #2b1d14;
+      --texto-suave: #6b5446;
+      --acento: #c4552d;
+      --acento-oscuro: #a2421f;
+      --borde: #e4d6c4;
+      --tarjeta: #fffaf3;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+    main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1, h2 { font-family: "Fraunces", Georgia, serif; line-height: 1.15; margin: 0; }
+    h1 { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 700; }
+    a { color: var(--acento); }
+    .eyebrow {
+      font-size: .78rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--acento); margin: 0 0 8px;
+    }
+    .cientifico { font-style: italic; color: var(--texto-suave); margin: 6px 0 20px; }
+
+    /* Visor */
+    .visor {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f7c99a 0%, #f0a77c 45%, #d9805e 75%, #a95b45 100%);
+      box-shadow: 0 10px 30px rgba(43, 29, 20, .15);
+    }
+    model-viewer {
+      display: block;
+      width: 100%;
+      height: min(70vh, 460px);
+      background: transparent;
+      --poster-color: transparent;
+    }
+    .aviso-visor {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; text-align: center; color: #fff;
+      font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+    .visor.sin-modelo .aviso-visor { display: flex; }
+
+    /* Va en el slot "ar-button": model-viewer le conecta activateAR() solo */
+    .boton-ar {
+      position: absolute;
+      left: 50%; bottom: 18px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      padding: 16px 28px;
+      min-width: 240px;
+      border: 0; border-radius: 999px;
+      background: var(--acento); color: #fff;
+      font: 600 1.1rem "Inter", system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(196, 85, 45, .35);
+    }
+    .boton-ar:hover { background: var(--acento-oscuro); }
+    .boton-ar:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
+    .sin-ar {
+      margin: 16px 0 0; padding: 12px 16px;
+      background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px;
+      font-size: .95rem; color: var(--texto-suave); text-align: center;
+    }
+    [hidden] { display: none !important; }
+
+    /* Datos */
+    .datos {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      margin: 28px 0 24px; padding: 0; list-style: none;
+    }
+    .datos li {
+      background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
+      padding: 12px; min-width: 0;
+    }
+    .datos .etiqueta {
+      display: block; font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--acento); margin-bottom: 4px;
+    }
+    .datos .valor { font-size: .92rem; line-height: 1.35; overflow-wrap: anywhere; }
+    @media (max-width: 420px) {
+      .datos { grid-template-columns: 1fr; }
+    }
+
+    .texto p { margin: 0 0 1em; }
+    .audio { margin: 8px 0 24px; }
+    .audio audio { width: 100%; }
+    .credito { font-size: .8rem; color: var(--texto-suave); margin-top: 24px; }
+    .volver { display: inline-block; margin-top: 16px; font-weight: 600; }
+
+    /* Portada */
+    .portada-intro { color: var(--texto-suave); margin: 12px 0 28px; }
+    .lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    .lista a {
+      display: block; padding: 18px 20px; text-decoration: none; color: var(--texto);
+      background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 16px;
+      transition: border-color .15s, transform .15s;
+    }
+    .lista a:hover { border-color: var(--acento); transform: translateY(-1px); }
+    .lista h2 { font-size: 1.4rem; }
+    .lista .meta { display: block; font-size: .9rem; color: var(--texto-suave); margin-top: 4px; }
+    .lista .meta em { font-style: italic; }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+
+  <script src="esculturas.js"></script>
+  <script>
+    (function () {
+      var app = document.getElementById("app");
+      var lista = Array.isArray(window.ESCULTURAS) ? window.ESCULTURAS : [];
+
+      function esc(valor) {
+        return String(valor == null ? "" : valor)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function urlFicha(id) {
+        return "?e=" + encodeURIComponent(id);
+      }
+
+      function portada() {
+        document.title = "Esculturas que cobran vida · Jujuy";
+        var items = lista.map(function (e) {
+          return '<li><a href="' + esc(urlFicha(e.id)) + '">' +
+            '<h2>' + esc(e.nombre) + '</h2>' +
+            '<span class="meta"><em>' + esc(e.cientifico) + '</em>' +
+            (e.lugar ? ' · ' + esc(e.lugar) : '') + '</span>' +
+            '</a></li>';
+        }).join("");
+        app.innerHTML =
+          '<p class="eyebrow">Jujuy · Realidad aumentada</p>' +
+          '<h1>Esculturas que cobran vida</h1>' +
+          '<p class="portada-intro">Elegí una escultura para verla en 3D y, si tu celular lo permite, ponerla en tamaño real a tu lado.</p>' +
+          (items ? '<ul class="lista">' + items + '</ul>' : '<p>Todavía no hay esculturas cargadas.</p>');
+      }
+
+      function noEncontrada() {
+        document.title = "No encontramos esa escultura";
+        app.innerHTML =
+          '<h1>No encontramos esa escultura</h1>' +
+          '<p class="portada-intro">Puede que el código QR esté incompleto o que la escultura ya no esté en la lista.</p>' +
+          '<a class="volver" href="./">← Ver todas las esculturas</a>';
+      }
+
+      function ficha(e) {
+        document.title = e.nombre + " · Esculturas que cobran vida";
+        var parrafos = (Array.isArray(e.texto) ? e.texto : [e.texto])
+          .filter(Boolean)
+          .map(function (p) { return "<p>" + esc(p) + "</p>"; })
+          .join("");
+
+        app.innerHTML =
+          '<p class="eyebrow">Realidad aumentada</p>' +
+          '<h1>' + esc(e.nombre) + '</h1>' +
+          (e.cientifico ? '<p class="cientifico">' + esc(e.cientifico) + '</p>' : '') +
+          '<div class="visor" id="visor">' +
+            '<model-viewer id="mv"' +
+              ' src="' + esc(e.modelo) + '"' +
+              (e.poster ? ' poster="' + esc(e.poster) + '"' : '') +
+              ' alt="Modelo 3D de ' + esc(e.nombre) + '"' +
+              ' ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"' +
+              ' camera-controls auto-rotate shadow-intensity="1">' +
+              '<button slot="ar-button" class="boton-ar" id="botonAr" hidden>Verlo en tu espacio</button>' +
+            '</model-viewer>' +
+            '<div class="aviso-visor">El modelo 3D todavía no está disponible. Volvé a probar en un rato.</div>' +
+          '</div>' +
+          '<p class="sin-ar" id="sinAr" hidden>Tu celular no tiene realidad aumentada, pero podés girar y hacer zoom al modelo 3D.</p>' +
+          '<ul class="datos">' +
+            '<li><span class="etiqueta">Época</span><span class="valor">' + esc(e.epoca) + '</span></li>' +
+            '<li><span class="etiqueta">Tamaño</span><span class="valor">' + esc(e.tamano) + '</span></li>' +
+            '<li><span class="etiqueta">Dónde</span><span class="valor">' + esc(e.lugar) + '</span></li>' +
+          '</ul>' +
+          '<div class="texto">' + parrafos + '</div>' +
+          (e.sonido ? '<div class="audio"><audio controls preload="none" src="' + esc(e.sonido) + '"></audio></div>' : '') +
+          (e.credito ? '<p class="credito">' + esc(e.credito) + '</p>' : '') +
+          '<a class="volver" href="./">← Ver todas las esculturas</a>';
+
+        configurarVisor();
+      }
+
+      function configurarVisor() {
+        var mv = document.getElementById("mv");
+        var visor = document.getElementById("visor");
+        var boton = document.getElementById("botonAr");
+        var sinAr = document.getElementById("sinAr");
+        var modeloOk = false;
+
+        function sinRealidadAumentada() {
+          boton.hidden = true;
+          sinAr.hidden = false;
+        }
+
+        function revisarAR() {
+          if (!modeloOk) return;
+          if (mv.canActivateAR) {
+            boton.hidden = false;
+            sinAr.hidden = true;
+          } else {
+            sinRealidadAumentada();
+          }
+        }
+
+        mv.addEventListener("load", function () {
+          modeloOk = true;
+          revisarAR();
+        });
+
+        // Si el .glb no existe o no se puede leer, la página sigue funcionando.
+        mv.addEventListener("error", function () {
+          visor.classList.add("sin-modelo");
+          boton.hidden = true;
+          sinAr.hidden = true;
+        });
+
+        mv.addEventListener("ar-status", function (ev) {
+          if (ev.detail && ev.detail.status === "failed") sinRealidadAumentada();
+        });
+
+        // Por si model-viewer no carga (sin conexión al CDN): no mostramos el botón.
+        if (window.customElements) {
+          customElements.whenDefined("model-viewer").then(revisarAR);
+        }
+      }
+
+      var id = new URLSearchParams(location.search).get("e");
+      if (!id) {
+        portada();
+      } else {
+        var encontrada = lista.filter(function (e) { return e.id === id; })[0];
+        if (encontrada) ficha(encontrada); else noEncontrada();
+      }
+    })();
+  </script>
+</body>
+</html>
