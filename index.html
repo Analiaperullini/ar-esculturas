@@ -79,14 +79,22 @@
     }
     .boton-ar:hover { background: var(--acento-oscuro); }
     .boton-ar:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
+    /* Van dentro de model-viewer para que también se vean en realidad aumentada (WebXR):
+       arriba del visor en 3D, abajo de la pantalla durante la AR. */
     .animaciones {
+      position: absolute; left: 0; right: 0; top: 14px;
       display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-      margin: 14px 0 0;
+      padding: 0 12px;
+    }
+    .animaciones[hidden] { display: none; }
+    model-viewer[ar-status="session-started"] .animaciones {
+      top: auto; bottom: max(32px, env(safe-area-inset-bottom));
     }
     .animaciones button {
       padding: 10px 20px;
       border: 2px solid var(--acento); border-radius: 999px;
-      background: transparent; color: var(--acento);
+      background: rgba(255, 250, 243, .92); color: var(--acento);
+      box-shadow: 0 2px 8px rgba(43, 29, 20, .2);
       font: 600 .95rem "Inter", system-ui, sans-serif;
       cursor: pointer;
     }
@@ -203,10 +211,10 @@
               ' camera-controls auto-rotate shadow-intensity="1"' +
               ' autoplay' + (e.animacion ? ' animation-name="' + esc(e.animacion) + '"' : '') + '>' +
               '<button slot="ar-button" class="boton-ar" id="botonAr" hidden>Verlo en tu espacio</button>' +
+              '<div class="animaciones" id="animaciones" role="group" aria-label="Animación" hidden></div>' +
             '</model-viewer>' +
             '<div class="aviso-visor">El modelo 3D todavía no está disponible. Volvé a probar en un rato.</div>' +
           '</div>' +
-          '<div class="animaciones" id="animaciones" role="group" aria-label="Animación" hidden></div>' +
           '<p class="sin-ar" id="sinAr" hidden>Tu celular no tiene realidad aumentada, pero podés girar y hacer zoom al modelo 3D.</p>' +
           '<ul class="datos">' +
             '<li><span class="etiqueta">Época</span><span class="valor">' + esc(e.epoca) + '</span></li>' +
@@ -249,6 +257,8 @@
           var nombres = mv.availableAnimations || [];
           caja.innerHTML = "";
           if (nombres.length < 2) { caja.hidden = true; return; }
+          // En AR, que tocar un botón no mueva el modelo de lugar.
+          caja.addEventListener("beforexrselect", function (ev) { ev.preventDefault(); });
           nombres.forEach(function (nombre) {
             var b = document.createElement("button");
             b.type = "button";
