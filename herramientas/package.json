@@ -1,0 +1,13 @@
+{
+  "name": "ar-esculturas-herramientas",
+  "private": true,
+  "description": "Herramientas para generar, validar y fotografiar los modelos 3D (no forman parte del sitio).",
+  "scripts": {
+    "validar": "node validar.mjs",
+    "capturas": "node capturas.mjs"
+  },
+  "devDependencies": {
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "playwright-core": "^1.65.1"
+  }
+}

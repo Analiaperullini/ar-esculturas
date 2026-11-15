@@ -1,3 +1,11 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# herramientas: entorno de Python y capturas de prueba (se regeneran)
+herramientas/.venv/
+herramientas/capturas/
+__pycache__/
+
+# imágenes de referencia: quedan solo en la computadora
+referencias/

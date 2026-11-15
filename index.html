@@ -140,7 +140,13 @@
       transition: border-color .15s, transform .15s;
     }
     .lista a:hover { border-color: var(--acento); transform: translateY(-1px); }
-    .lista h2 { font-size: 1.4rem; }
+    .lista h2, .lista h3 { font-family: "Fraunces", Georgia, serif; font-size: 1.4rem; line-height: 1.15; margin: 0; }
+    .grupo { margin-top: 28px; }
+    .lista + .grupo { margin-top: 32px; }
+    .lugar {
+      font-family: "Inter", system-ui, sans-serif; font-size: .78rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--acento); margin: 0 0 10px;
+    }
     .lista .meta { display: block; font-size: .9rem; color: var(--texto-suave); margin-top: 4px; }
     .lista .meta em { font-style: italic; }
   </style>
@@ -153,6 +159,8 @@
     (function () {
       var app = document.getElementById("app");
       var lista = Array.isArray(window.ESCULTURAS) ? window.ESCULTURAS : [];
+      // texto de los botones de animación (las que no estén acá se muestran con mayúscula inicial)
+      var nombres = { reposo: "Reposo", pastar: "Pastar", caminar: "Caminar", rugir: "Rugir" };
 
       function esc(valor) {
         return String(valor == null ? "" : valor)
@@ -167,20 +175,39 @@
         return "?e=" + encodeURIComponent(id);
       }
 
+      function tarjeta(e, conLugar, titulo) {
+        return '<li><a href="' + esc(urlFicha(e.id)) + '">' +
+          '<' + titulo + '>' + esc(e.nombre) + '</' + titulo + '>' +
+          '<span class="meta"><em>' + esc(e.cientifico) + '</em>' +
+          (conLugar && e.lugar ? ' · ' + esc(e.lugar) : '') + '</span>' +
+          '</a></li>';
+      }
+
       function portada() {
         document.title = "Esculturas que cobran vida · Jujuy";
-        var items = lista.map(function (e) {
-          return '<li><a href="' + esc(urlFicha(e.id)) + '">' +
-            '<h2>' + esc(e.nombre) + '</h2>' +
-            '<span class="meta"><em>' + esc(e.cientifico) + '</em>' +
-            (e.lugar ? ' · ' + esc(e.lugar) : '') + '</span>' +
-            '</a></li>';
-        }).join("");
+        // si hay más de una escultura en el mismo lugar, van juntas bajo el nombre del lugar
+        var grupos = [];
+        lista.forEach(function (e) {
+          var g = grupos.filter(function (g) { return g.lugar === (e.lugar || ""); })[0];
+          if (!g) { g = { lugar: e.lugar || "", items: [] }; grupos.push(g); }
+          g.items.push(e);
+        });
+        var html = "", sueltas = "";
+        grupos.forEach(function (g) {
+          if (g.lugar && g.items.length > 1) {
+            if (sueltas) { html += '<ul class="lista">' + sueltas + '</ul>'; sueltas = ""; }
+            html += '<section class="grupo"><h2 class="lugar">' + esc(g.lugar) + '</h2><ul class="lista">' +
+              g.items.map(function (e) { return tarjeta(e, false, "h3"); }).join("") + '</ul></section>';
+          } else {
+            sueltas += g.items.map(function (e) { return tarjeta(e, true, "h2"); }).join("");
+          }
+        });
+        if (sueltas) html += '<ul class="lista">' + sueltas + '</ul>';
         app.innerHTML =
           '<p class="eyebrow">Jujuy · Realidad aumentada</p>' +
           '<h1>Esculturas que cobran vida</h1>' +
           '<p class="portada-intro">Elegí una escultura para verla en 3D y, si tu celular lo permite, ponerla en tamaño real a tu lado.</p>' +
-          (items ? '<ul class="lista">' + items + '</ul>' : '<p>Todavía no hay esculturas cargadas.</p>');
+          (html || '<p>Todavía no hay esculturas cargadas.</p>');
       }
 
       function noEncontrada() {
@@ -207,7 +234,8 @@
               ' src="' + esc(e.modelo) + '"' +
               (e.poster ? ' poster="' + esc(e.poster) + '"' : '') +
               ' alt="Modelo 3D de ' + esc(e.nombre) + '"' +
-              ' ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"' +
+              ' ar ar-modes="webxr scene-viewer quick-look" ar-scale="' + (e.arEscala === "auto" ? "auto" : "fixed") + '"' +
+              ' ar-placement="floor"' +
               ' camera-controls auto-rotate shadow-intensity="1"' +
               ' autoplay' + (e.animacion ? ' animation-name="' + esc(e.animacion) + '"' : '') + '>' +
               '<button slot="ar-button" class="boton-ar" id="botonAr" hidden>Verlo en tu espacio</button>' +
@@ -262,7 +290,7 @@
           nombres.forEach(function (nombre) {
             var b = document.createElement("button");
             b.type = "button";
-            b.textContent = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+            b.textContent = nombres[nombre] || nombre.charAt(0).toUpperCase() + nombre.slice(1);
             b.addEventListener("click", function () {
               mv.animationName = nombre;
               mv.play();
