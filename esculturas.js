@@ -32,8 +32,8 @@ window.ESCULTURAS = [
     lugar: "Parque San Martín, San Salvador de Jujuy",
     epoca: "Hace unos 66 a 70 millones de años",
     tamano: "Unos 7 m de largo",   // REVISAR con el paleontólogo (es la ESCALA de herramientas/generar_hadrosaurio.py)
-    modelo: "modelos/hadrosaurio.glb?v=2",
-    poster: "modelos/hadrosaurio-poster.webp?v=2",
+    modelo: "modelos/hadrosaurio.glb?v=4",
+    poster: "modelos/hadrosaurio-poster.webp?v=4",
     animacion: "reposo",
     arEscala: "auto",              // mide más de 6 m: en realidad aumentada se ajusta para entrar en el espacio
     sonido: "",
@@ -52,8 +52,8 @@ window.ESCULTURAS = [
     lugar: "Parque San Martín, San Salvador de Jujuy",
     epoca: "Hace unos 66 a 70 millones de años",
     tamano: "Unos 6,5 m de largo", // REVISAR con el paleontólogo (es la ESCALA de herramientas/generar_abelisaurio.py)
-    modelo: "modelos/abelisaurio.glb?v=2",
-    poster: "modelos/abelisaurio-poster.webp?v=2",
+    modelo: "modelos/abelisaurio.glb?v=3",
+    poster: "modelos/abelisaurio-poster.webp?v=3",
     animacion: "reposo",
     arEscala: "auto",              // mide más de 6 m: en realidad aumentada se ajusta para entrar en el espacio
     sonido: "",
