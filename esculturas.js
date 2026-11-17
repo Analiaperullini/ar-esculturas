@@ -13,8 +13,8 @@ window.ESCULTURAS = [
     lugar: "Parque Xibi Xibi, San Salvador de Jujuy",
     epoca: "Hace unos 6 millones de años",
     tamano: "Entre 100 y 300 kg",
-    modelo: "modelos/gliptodonte.glb",
-    poster: "modelos/gliptodonte-poster.webp",
+    modelo: "modelos/gliptodonte.glb?v=2",
+    poster: "modelos/gliptodonte-poster.webp?v=2",
     animacion: "pastar",   // opcional: animación inicial del modelo ("pastar" o "caminar")
     sonido: "",
     texto: [
