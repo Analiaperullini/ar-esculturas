@@ -52,7 +52,7 @@ window.ESCULTURAS = [
     lugar: "Parque San Martín, San Salvador de Jujuy",
     epoca: "Hace unos 66 a 70 millones de años",
     tamano: "Unos 6,5 m de largo", // REVISAR con el paleontólogo (es la ESCALA de herramientas/generar_abelisaurio.py)
-    modelo: "modelos/abelisaurio.glb?v=4",
+    modelo: "modelos/abelisaurio.glb?v=5",
     poster: "modelos/abelisaurio-poster.webp?v=4",
     animacion: "reposo",
     arEscala: "auto",              // mide más de 6 m: en realidad aumentada se ajusta para entrar en el espacio
